@@ -1,0 +1,158 @@
+
+
+下载口：PA13-SWDIO,PA14-SWCLK(红色)
+keil新建工程，只需要CMSIS放芯片文件，LIB放库文件，USER放用户文件，STARTUP放启动文件
+/***************************************************************/
+使用外部中断基本步骤：
+1.设置相应时钟
+2.设置相应中断
+3.IO初始化
+4.把相应IO口设置为中断线路（设置中断前）并初始化
+5.中断函数
+
+http://www.stmcu.org/module/forum/thread-603652-1-1.html
+stm32 每一个GPIO都可以触发一个外部中断，但是，GPIO是以组为单位的，同组间的外部中断同一时间只能使用一个。
+比如说：PA0,PB0,PC0,PD0,PE0，PF0,PG0这些为一组，如果我们使用PA0为外部中断源，那么别的就不能在使用了，在这种情况下，
+我们只能使用PC1,PD2这种末端序号不同的外部中断源。每一组使用一个中断标志EXTIx。EXTI0-EXTI4这5个外部中断有自己单独的
+中断响应函数，EXTI5-9共用一个中断响应函数，EXTI10-15共用一个中断响应函数。
+
+中断控制专用管理机制：NVIC
+http://www.51hei.com/bbs/dpj-41711-1.html
+如果有三个中断，则至少选择中断分组2（因为中断分组2设置里寄存器高四位中，前两位为抢占优先级，后两位为响应优先级，即此分组
+可以有4个中断，具体解释看链接）
+中断通道的选择：
+上面已经解释过，如果你用了PA2（属于EXTI2），则选择EXTI2_IRQChannel，用了PC3（属于EXTI3），就选择 EXTI3_IRQChannel  
+，如果用了PA5，则选择EXTI9_5_IRQChannel（EXTI5-9共用一个通道）
+
+要触发中断，需要打开GPIO复用时钟
+连接外部中断的引脚需要设置为输入模式，连接LED的设置为输出模式
+
+把相应IO口设置为中断线路：
+由于GPIO不是专用的中断引脚（例如串口不用，串口有专门的中断函数），所以用GPIO触发外部中断的时候需要设置GPIO相应的引脚和中断线连接起来
+中断向量表在.s文件
+
+(USART3:PB10-TX,PB11-RX)
+(USART2:PA2-TX,PA3-RX)
+
+https://github.com/MaJerle/stm32f429(上面有好多例程)
+
+/***************************************************************/
+硬件连接：(6个线)
+MISO--DO,MISI--DIO,SCK--CLK,NSS--CS,CE-- ,IRQ
+https://wenku.baidu.com/view/35cb65fe0242a8956bece4eb.html
+
+资料：
+https://wenku.baidu.com/view/d48ce48acc22bcd126ff0c6e.html?pn=51
+
+
+
+
+/***************************************************************/
+SPI_Config();
+//usart2_3_init();
+	  printf("\r\n this is a 2.4G demo \r\n");
+	printf("\r\n 这是无线传输从机端的反馈信息 \r\n");
+	printf("\r\n 正在检查NRF与MCU是否连接正常... \r\n");
+	status=NRF_check();
+	if(status==SUCCESS)
+	  printf("\r\n NRF与MCU连接成功 \r\n");
+  else
+    printf("\r\n 正在检查NRF与MCU是否连接正常... \r\n");	
+	
+while(1)
+{
+	delay(40000);
+	printf("\r\n 从机端进入接收模式 \r\n");
+	NRF_RX_Mode();
+	status = NRF_Rx_Dat(rxbuf);
+	if(status==RX_DR)
+	{
+	for(i=0;i<4;i++)
+		{
+		printf("\r\n接收到的数据为：\r\n",rxbuf[i]);
+		rxbuf[i]+=1;
+		txbuf[i]=rxbuf[i];
+		}
+	}
+	printf("\r\n从机端进入应答发送模式\r\n");
+	NRF_TX_Mode();
+	do
+	{
+		status=NRF_TX_Dat(txbuf);
+	}while(status==MAX_RT);
+	
+}
+/***************************************************************/
+
+FSMC:灵活的静态存储器控制器
+
+AHB主要用于高性能模块(如CPU、DMA和DSP等)之间的连接，
+APB主要用于低带宽的周边外设之间的连接，
+
+
+/***************************************************************/
+
+#ifdef __cplusplus
+ extern "C" {
+#endif
+解释：
+http://blog.csdn.net/zzwdkxx/article/details/44244535
+
+
+/***************************************************************/
+要初始化发送模式和接收模式
+NRF_RX_Mode()
+NRF_TX_Mode（）
+
+NRF24L01_RxPacket（NRF_Buff）接收数据到NRF_Buff
+NRF24L01_TxPacket(NRF_Buff);要发送的数据（NRF_Buff）
+NRF_Buff[0]=31;用于设置发送的数据位
+NRF_Buff[]其他位用于放数据
+
+TX_ADDRESS：发送地址，此地址是对方的地址，即目标地址，也就是数据要去的地方
+RX_ADDRESS：接收地址，即要从此地址接收数据
+
+uint8_t NRF_Channel=67;   //通信频率等于 2.400+ NRF_Channel   范围 0 - 100;
+
+设置的MOSI就连接2.4G的MOSI
+/***************************************************************/
+stm32f407 最高频率336，系统频率100多M，所以用for循环这类的延时，延时50万才能看到小灯闪烁
+/***************************************************************/
+解决keil中文乱码问题
+edit--configuration。。。--encoding选择 chinese GB2312
+/***************************************************************/
+
+GPS --nmea lib
+nmea语句包括GPGGA GPGSA,GPGSV,GPRMC,GPVTG
+GPGSV：可视卫星状态输出语句
+GPGGA：GPS固定数据输出语句
+GPGSA：GPS精度指针及使用卫星
+GPRMC：推荐最小数据量的GPS信息
+GPVTG：地面速度信息
+GPS波特率为9600
+
+-------------------------------------------------------------
+	OLED_ShowCHinese(0,0,0);//中
+		OLED_ShowCHinese(18,0,1);//景
+		OLED_ShowCHinese(36,0,2);//园
+		OLED_ShowCHinese(54,0,3);//电
+		OLED_ShowCHinese(72,0,4);//子
+		OLED_ShowCHinese(90,0,5);//科
+		OLED_ShowCHinese(108,0,6);//技
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
