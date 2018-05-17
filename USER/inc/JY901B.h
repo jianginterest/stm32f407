@@ -15,7 +15,9 @@ extern	float Angle_speed[3];
 extern	float h[3];
 extern	float w[3];
 extern	float	A[3];
-extern	unsigned char data[30];	
+extern	float	JSD[3];	
+extern	float	c[3];		
+extern	unsigned char data[40];	
 extern float Air_Pressure;	
 
 #endif

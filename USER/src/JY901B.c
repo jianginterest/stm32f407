@@ -1,10 +1,11 @@
 #include "include.h"
 
 
-unsigned char data[30];
+unsigned char data[40];
 
 
 float Angle_speed[3]={0},Angle[3]={0};
+float JSD[3]={0},c[3]={0};
 
 float Air_Pressure=0;
 /*******************************************************************************
@@ -87,7 +88,41 @@ void JY901B_Getdata(void)
 		else I2C_Ack();
 	}
 	I2C_Stop();
+	
+	I2C_Start();
+    I2C_SendByte(JY901B_SlaveAddress);
+	I2C_WaitAck();
+	I2C_SendByte(0x3a);
+	I2C_WaitAck();
+	I2C_Start();
+	I2C_SendByte(JY901B_SlaveAddress+1);
+	I2C_WaitAck();
 
+	for(i=20;i<26;i++)
+	{
+		data[i]=I2C_RadeByte();	
+		if(i==25) I2C_NoAck();
+		else I2C_Ack();
+	}
+	I2C_Stop();
+
+	I2C_Start();
+    I2C_SendByte(JY901B_SlaveAddress);
+	I2C_WaitAck();
+	I2C_SendByte(0x34);
+	I2C_WaitAck();
+	I2C_Start();
+	I2C_SendByte(JY901B_SlaveAddress+1);
+	I2C_WaitAck();
+
+	for(i=26;i<32;i++)
+	{
+		data[i]=I2C_RadeByte();	
+		if(i==31) I2C_NoAck();
+		else I2C_Ack();
+	}
+	I2C_Stop();
+	
 	Angle_speed[0] = (float)CharToShort(&data[0])/32768*2000;
 	Angle_speed[1] = (float)CharToShort(&data[2])/32768*2000;
 	Angle_speed[2] = (float)CharToShort(&data[4])/32768*2000;
@@ -95,5 +130,18 @@ void JY901B_Getdata(void)
 	Angle[0] = (float)CharToShort(&data[6])/32768*180;
 	Angle[1] = (float)CharToShort(&data[8])/32768*180;
 	Angle[2] = (float)CharToShort(&data[10])/32768*180;
-	Air_Pressure= ( (int)(data[15]<<24)|(int)(data[14]<<16)|(int)(data[13]<<8)|(int)(data[12])); 	
+	
+	Air_Pressure= ( (int)(data[15]<<24)|(int)(data[14]<<16)|(int)(data[13]<<8)|(int)(data[12])); 
+
+//加速度
+	  JSD[0] = (float)CharToShort(&data[26])/32768*16;
+		JSD[1] = (float)CharToShort(&data[28])/32768*16;
+		JSD[2] = (float)CharToShort(&data[30])/32768*16;
+	
+	//磁场
+	 c[0]=CharToShort(&data[20]);
+	 c[1]=CharToShort(&data[22]);
+	 c[2]=CharToShort(&data[24]);
+
+	
 }
