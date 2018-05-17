@@ -60,8 +60,8 @@
 #define OLED_RST_Clr() GPIO_ResetBits(GPIOB,GPIO_Pin_11)//RES
 #define OLED_RST_Set() GPIO_SetBits(GPIOB,GPIO_Pin_11)
 
-#define OLED_DC_Clr() GPIO_ResetBits(GPIOB,GPIO_Pin_10)//DC
-#define OLED_DC_Set() GPIO_SetBits(GPIOB,GPIO_Pin_10)
+#define OLED_DC_Clr() GPIO_ResetBits(GPIOB,GPIO_Pin_14)//DC
+#define OLED_DC_Set() GPIO_SetBits(GPIOB,GPIO_Pin_14)
  		     
 #define OLED_CS_Clr()  GPIO_ResetBits(GPIOB,GPIO_Pin_12)//CS
 #define OLED_CS_Set()  GPIO_SetBits(GPIOB,GPIO_Pin_12)

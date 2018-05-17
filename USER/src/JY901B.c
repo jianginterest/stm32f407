@@ -1,8 +1,12 @@
 #include "include.h"
 
 
-unsigned char data[15];
-float Angle_speed[3],Angle[3];
+unsigned char data[30];
+
+
+float Angle_speed[3]={0},Angle[3]={0};
+
+float Air_Pressure=0;
 /*******************************************************************************
 *函数原型:		void ShortToChar(short sData,unsigned char cData[])
 *功　　能:		数据类型转换
@@ -29,14 +33,13 @@ short CharToShort(unsigned char cData[])
 void JY901B_Getdata(void)
 {
 	unsigned char i;
-
 	I2C_Start();
-  I2C_SendByte(JY901B_SlaveAddress);
+    I2C_SendByte(JY901B_SlaveAddress);
 	I2C_WaitAck();
-	I2C_SendByte(0x34);
+	I2C_SendByte(0x37);
 	I2C_WaitAck();
 	I2C_Start();
-	I2C_SendByte((JY901B_SlaveAddress)+1);
+	I2C_SendByte(JY901B_SlaveAddress+1);
 	I2C_WaitAck();
 
 	for(i=0;i<6;i++)
@@ -46,8 +49,8 @@ void JY901B_Getdata(void)
 		else I2C_Ack();
 	}
 	I2C_Stop();
-	/*
-  delay5ms();
+	
+	//Delay_us(10);
 	
 	I2C_Start();
     I2C_SendByte(JY901B_SlaveAddress);
@@ -65,25 +68,32 @@ void JY901B_Getdata(void)
 		else I2C_Ack();
 	}
 	I2C_Stop();
-	*/
+	
+	//Delay_us(10);
+	
+	I2C_Start();
+  I2C_SendByte(JY901B_SlaveAddress);
+	I2C_WaitAck();
+	I2C_SendByte(0x47);
+	I2C_WaitAck();
+	I2C_Start();
+	I2C_SendByte(JY901B_SlaveAddress+1);
+	I2C_WaitAck();
+
+	for(i=12;i<20;i++)
+	{
+		data[i]=I2C_RadeByte();	
+		if(i==19) I2C_NoAck();
+		else I2C_Ack();
+	}
+	I2C_Stop();
 
 	Angle_speed[0] = (float)CharToShort(&data[0])/32768*2000;
 	Angle_speed[1] = (float)CharToShort(&data[2])/32768*2000;
 	Angle_speed[2] = (float)CharToShort(&data[4])/32768*2000;
-
-	Angle_speed[0]=(int)(Angle_speed[0]*10);
-	Angle_speed[0]=Angle_speed[0]/10;
 	
-	Angle_speed[1]=(int)(Angle_speed[1]*10);
-	Angle_speed[1]=Angle_speed[1]/10;
-	
-	Angle_speed[2]=(int)(Angle_speed[2]*10);
-	Angle_speed[2]=Angle_speed[2]/10;
-	
-//	Angle[0] = (float)CharToShort(&data[6])/32768*180;
-	//Angle[1] = (float)CharToShort(&data[8])/32768*180;
-	//Angle[2] = (float)CharToShort(&data[10])/32768*180;
+	Angle[0] = (float)CharToShort(&data[6])/32768*180;
+	Angle[1] = (float)CharToShort(&data[8])/32768*180;
+	Angle[2] = (float)CharToShort(&data[10])/32768*180;
+	Air_Pressure= ( (int)(data[15]<<24)|(int)(data[14]<<16)|(int)(data[13]<<8)|(int)(data[12])); 	
 }
-
-
-

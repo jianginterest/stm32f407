@@ -55,7 +55,7 @@ extern uint8_t buf[5];
 
 extern uint8_t read_buf[5];
 
-extern char USART1_RX_BUF[600];
+extern char USART1_RX_BUF[200];
 
 extern uint8_t m[][10];
 

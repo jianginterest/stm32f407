@@ -21,7 +21,7 @@ static u16  fac_us=0;
  */
 void Delay_init(void){
 	SysTick->CTRL&=0xfffffffb;
-	fac_us=72/8;		    
+	fac_us=168/8;		    
 	fac_ms=(u16)fac_us*1000;
 }	
 

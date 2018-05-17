@@ -95,3 +95,89 @@ unsigned char i;
    // for(n=0;n<4000;n++);
    // EN485_1_L();
 	}
+
+	
+	
+/*******************************************************************************
+* Function Name  : void USART_Send_single(uint8_t usart,uint8_t date)
+* Description    : 
+* Input          : str字符串指针 len长度
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void USART_Send_single(uint8_t usart,uint8_t date)//字符
+{if(usart==1)
+{USART_SendData(USART1,date);
+while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);}//TXE?
+
+ else if(usart==2)
+ {USART_SendData(USART2,date);
+ while(USART_GetFlagStatus(USART2, USART_FLAG_TXE) == RESET);}
+
+ else if(usart==3)
+ {USART_SendData(USART3,date);
+ while(USART_GetFlagStatus(USART3, USART_FLAG_TXE) == RESET);}
+
+ else if(usart==4)
+ {USART_SendData(UART4,date);
+ while(USART_GetFlagStatus(UART4, USART_FLAG_TXE) == RESET);}
+}
+
+/*******************************************************************************
+* Function Name  : void USART_Send_number(unsigned int number)
+* Description    : 串口发送num
+* Input          : str字符串指针 len长度
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void USART_Send_number_5(unsigned int number)
+{
+if((number&0x80000)==0x80000)
+USART_Send_single(2,'-');
+else
+USART_Send_single(2,'+');
+
+number&=0x7ffff;
+ int W,S,B,Q,G,SW;
+SW=number/100000+0x30;
+W=number%100000/10000+0x30;
+S=number%10000/1000+0x30;
+B=number%1000/100+0x30;
+Q=number%100/10+0x30;
+G=number%10+0x30;
+USART_SendData(USART2,SW);
+Delay_ms(50);
+USART_SendData(USART2,W);
+Delay_ms(50);
+USART_SendData(USART2,S);
+Delay_ms(50);
+USART_SendData(USART2,B);
+Delay_ms(50);
+USART_SendData(USART2,Q);
+Delay_ms(50);
+USART_SendData(USART2,G);
+Delay_ms(50);
+}
+
+
+void USART_Send_number_3(unsigned int number)
+{
+if((number&0x800)==0x800)
+USART_Send_single(2,'-');
+else
+USART_Send_single(2,'+');
+
+number&=0x7ff;
+ int B,Q,G;
+
+B=number/100+0x30;
+Q=number%100/10+0x30;
+G=number%10+0x30;
+
+USART_SendData(USART2,B);
+Delay_ms(50);
+USART_SendData(USART2,Q);
+Delay_ms(50);
+USART_SendData(USART2,G);
+Delay_ms(50);
+}

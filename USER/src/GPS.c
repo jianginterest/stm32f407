@@ -9,8 +9,8 @@
 //
 //代码作者：  相广超  xgc94418297.blog.163.com
 //=============================================================
-
-#include <include.h>
+#include "GPS.h"
+#include <string.h>
 
 static uchar GetComma(uchar num,char* str);
 static int Get_Int_Number(char *s);
@@ -26,9 +26,7 @@ static void UTC2BTC(DATE_TIME *GPS);
 //			 1: 解析GPRMC完毕
 //           0: 没有进行解析，或数据无效
 //====================================================================//
-
-
-	int GPS_RMC_Parse(char *line,GPS_INFO *GPS)
+int GPS_RMC_Parse(char *line,GPS_INFO *GPS)
 {
 	uchar ch, status, tmp;
 	float lati_cent_tmp, lati_second_tmp;
@@ -48,7 +46,7 @@ static void UTC2BTC(DATE_TIME *GPS);
 			GPS->latitude   = Get_Double_Number(&buf[GetComma(3, buf)]);
 			GPS->longitude  = Get_Double_Number(&buf[GetComma( 5, buf)]);
 
-      GPS->latitude_Degree  = (int)GPS->latitude / 100;       //分离纬度
+       	GPS->latitude_Degree  = (int)GPS->latitude / 100;       //分离纬度
 			lati_cent_tmp         = (GPS->latitude - GPS->latitude_Degree * 100);
 			GPS->latitude_Cent    = (int)lati_cent_tmp;
 			lati_second_tmp       = (lati_cent_tmp - GPS->latitude_Cent) * 60;
@@ -514,5 +512,6 @@ void Int_To_Str(int x,char *Str)
 	}
 	*Ptr = '\0';
 }
+
 
 

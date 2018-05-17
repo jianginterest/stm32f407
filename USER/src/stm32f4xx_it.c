@@ -226,39 +226,49 @@ void EXTI0_IRQHandler (void)
   * @param  None
   * @retval None
   */
-uint16_t USART1_RX_STA=0;
-char USART1_RX_BUF[600]={0};
+int16_t USART1_RX_STA=0;
+char USART1_RX_BUF[200]={0};
 uint8_t res;
+uint8_t flag=0;
+GPS_INFO GPS1;
 void USART1_IRQHandler(void)
 {
-	//uint8_t res;
-if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) //接收到数据
-		{
+	if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) //接收到数据
+	{
 		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+		//USART_ClearFlag(USART1,USART_FLAG_TC);
 		res=USART_ReceiveData(USART1);
-		//USART1_RX_BUF[1]=USART_ReceiveData(USART1);
-			GPIO_WriteBit(GPIOD,GPIO_Pin_14,(BitAction)(1-(GPIO_ReadOutputDataBit(GPIOD,GPIO_Pin_14))));
-			if((	USART1_RX_STA&(1<<15))==0)//接收完的一批数据,还没有被处理,则不再接收其他数据
-			{
-			 if(USART1_RX_STA<600)   //还可以接收数据  USART3_MAX_RECV_LEN = 600    最大接收缓存字节数
-            {
-               // TIM_SetCounter(TIM7,0);//计数器清空                         
-               // if(USART1_RX_STA==0)                //使能定时器7的中断 
-                //{
-                //    TIM_Cmd(TIM7,ENABLE);//使能定时器7
-                //}
-                USART1_RX_BUF[USART1_RX_STA++]=res; //记录接收到的值    
-            }else 
-            {
-                //USART1_RX_STA|=1<<15;               //强制标记接收完成
-							USART1_RX_STA=0;
-            } 
-
-			}
-			
-		USART_ClearFlag(USART1,USART_FLAG_TC);
+		if((res=='$') && (flag==0))
+		{
+			flag=1;
 		}
+		else if((flag==1) && (res=='$'))
+		{
+			flag=2;
+		}
+
+		if(flag==1)
+		{
+			GPIO_WriteBit(GPIOD,GPIO_Pin_14,(BitAction)(1-(GPIO_ReadOutputDataBit(GPIOD,GPIO_Pin_14))));
+
+			USART1_RX_BUF[USART1_RX_STA++]=res; //记录接收到的值    
+
+
+		}
+		else if (flag==2)
+		{
+			flag=0;
+			USART1_RX_STA=0;
+			GPS_RMC_Parse(USART1_RX_BUF,&GPS1);		
+			GPS_GGA_Parse(USART1_RX_BUF,&GPS1);
+			GPS_GSV_Parse(USART1_RX_BUF,&GPS1);
+		}
+		else
+		{
+		}					
+
 	}
+}
 
 	
 /**
@@ -270,21 +280,21 @@ if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) //接收到数据
 uint8_t USART2_RX_BUF[5];
 void USART2_IRQHandler(void)
 {
-if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET) 
-		{
-		USART_ClearITPendingBit(USART2, USART_IT_RXNE);
-		USART_ClearFlag(USART2,USART_FLAG_TC);
-   
-		USART2_RX_BUF[0]=USART_ReceiveData(USART2);
-			
-			if(USART2_RX_BUF[0]=='A')
-			{
-		   GPIO_WriteBit(GPIOD,GPIO_Pin_15,(BitAction)(1-(GPIO_ReadOutputDataBit(GPIOD,GPIO_Pin_15))));
-			USART2_Send_data(m[1],10);
-			USART2_RX_BUF[0]=0;
-			}
-	//	USART_SendData(USART2,USART_ReceiveData(USART2));
-		}
+//if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET) 
+//		{
+//		USART_ClearITPendingBit(USART2, USART_IT_RXNE);
+//		USART_ClearFlag(USART2,USART_FLAG_TC);
+//   
+//		USART2_RX_BUF[0]=USART_ReceiveData(USART2);
+//			
+//			if(USART2_RX_BUF[0]=='A')
+//			{
+//		   GPIO_WriteBit(GPIOD,GPIO_Pin_15,(BitAction)(1-(GPIO_ReadOutputDataBit(GPIOD,GPIO_Pin_15))));
+//			USART2_Send_data(m[1],10);
+//			USART2_RX_BUF[0]=0;
+//			}
+//	//	USART_SendData(USART2,USART_ReceiveData(USART2));
+//		}
 
 }
 /**
@@ -296,20 +306,20 @@ if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
 void USART3_IRQHandler(void)
 {
 
-if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET) 
-		{
-		USART_ClearITPendingBit(USART3, USART_IT_RXNE);
-		USART_ClearFlag(USART3,USART_FLAG_TC);
-			
-   	
-	  GPIO_WriteBit(GPIOC,GPIO_Pin_14,(BitAction)(1-(GPIO_ReadOutputDataBit(GPIOC,GPIO_Pin_14))));
-			
-			
-	 
-		USART_SendData(USART3,USART_ReceiveData(USART3));
-			
-			
-		}
+//if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET) 
+//		{
+//		USART_ClearITPendingBit(USART3, USART_IT_RXNE);
+//		USART_ClearFlag(USART3,USART_FLAG_TC);
+//			
+//   	
+//	  GPIO_WriteBit(GPIOC,GPIO_Pin_14,(BitAction)(1-(GPIO_ReadOutputDataBit(GPIOC,GPIO_Pin_14))));
+//			
+//			
+//	 
+//		USART_SendData(USART3,USART_ReceiveData(USART3));
+//			
+//			
+//		}
 
 
 }

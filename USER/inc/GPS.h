@@ -14,8 +14,8 @@ typedef struct{
 }DATE_TIME;
 
 typedef struct{
-	double  latitude;  //纬度
-	double  longitude; //经度
+	double  latitude;  //经度
+	double  longitude; //纬度
 	int     latitude_Degree;	//度
 	int		latitude_Cent;		//分
 	int   	latitude_Second;    //秒
@@ -33,7 +33,6 @@ typedef struct{
 }GPS_INFO;
 
 //void GPS_Init(void);
-
 int GPS_RMC_Parse(char *line,GPS_INFO *GPS);
 int GPS_GGA_Parse(char *line,GPS_INFO *GPS);
 int GPS_GSV_Parse(char *line,GPS_INFO *GPS);
@@ -41,5 +40,8 @@ int GPS_GSV_Parse(char *line,GPS_INFO *GPS);
 void Int_To_Str(int x,char *Str);
 
 #endif  //__GPS_H_
+
+
+
 
 

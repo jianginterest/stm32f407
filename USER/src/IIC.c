@@ -14,22 +14,22 @@ void I2C_INIT(void)
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);  //使能GPIOB时钟
   
 	GPIO_InitStructure.GPIO_Pin =  SCL_PIN;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;  
-	GPIO_InitStructure.GPIO_PuPd=GPIO_PuPd_UP;//上下拉电阻
+	GPIO_InitStructure.GPIO_PuPd=GPIO_PuPd_NOPULL;//上下拉电阻
 	GPIO_InitStructure.GPIO_OType=GPIO_OType_OD;
 	
   GPIO_Init(GPIOC, &GPIO_InitStructure);
 
   GPIO_InitStructure.GPIO_Pin =  SDA_PIN;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_PuPd=GPIO_PuPd_UP;//上下拉电阻
+	GPIO_InitStructure.GPIO_PuPd=GPIO_PuPd_NOPULL;//上下拉电阻
 	GPIO_InitStructure.GPIO_OType=GPIO_OType_OD;
 	
   GPIO_Init(GPIOC, &GPIO_InitStructure);
-	SCL_H;
-	SDA_H;
+//	SCL_H;
+//	SDA_H;
 }
 void I2C_SDA_OUT(void)
 {
@@ -68,12 +68,17 @@ void I2C_SDA_IN(void)
 ****************************************************************************** */
 void I2C_delay(void)
 {
-	__NOP();
-	
-	 //Delay_ms(5);
-	 uint16_t i=5;
-	while(i)
-		i--;
+
+	uint8_t j = 1;
+	uint16_t i = 0;
+
+//	while(j>0)
+//	{
+		for(i=0;i<50;i++)
+		{
+		}
+//		j--;
+//	}
 }
 
 void delay5ms(void)
@@ -92,18 +97,13 @@ void delay5ms(void)
 ****************************************************************************** */
 uint16_t I2C_Start(void)
 {
+	
 	SDA_H;
 	SCL_H;
 	I2C_delay();
-	I2C_SDA_IN();
-	if(!SDA_read)return FALSE;	//SDA线为低电平则总线忙,退出
-	I2C_SDA_OUT();
 	SDA_L;
-	I2C_SDA_IN();
-	delay_us(2);
-	//if(SDA_read) return FALSE;	//SDA线为高电平则总线出错,退出
-	I2C_SDA_OUT();
-	SDA_L;
+	I2C_delay();
+	SCL_L;
 	I2C_delay();
 	return TRUE;
 }
@@ -116,15 +116,10 @@ uint16_t I2C_Start(void)
 ****************************************************************************** */
 void I2C_Stop(void)
 {
-	I2C_SDA_OUT();
-	SCL_L;
-	I2C_delay();
 	SDA_L;
-	I2C_delay();
 	SCL_H;
 	I2C_delay();
 	SDA_H;
-	I2C_delay();
 } 
 /*******************************************************************************
 * Function Name  : I2C_Ack
@@ -135,15 +130,13 @@ void I2C_Stop(void)
 ****************************************************************************** */
 void I2C_Ack(void)
 {	
-	I2C_SDA_OUT();
-	SCL_L;
-	I2C_delay();
 	SDA_L;
 	I2C_delay();
 	SCL_H;
 	I2C_delay();
 	SCL_L;
 	I2C_delay();
+	SDA_H;
 }   
 /*******************************************************************************
 * Function Name  : I2C_NoAck
@@ -154,16 +147,13 @@ void I2C_Ack(void)
 ****************************************************************************** */
 void I2C_NoAck(void)
 {	
-	I2C_SDA_OUT();
-	SCL_L;
-	I2C_delay();
 	SDA_H;
 	I2C_delay();
 	SCL_H;
 	I2C_delay();
 	SCL_L;
 	I2C_delay();
-} 
+}
 /*******************************************************************************
 * Function Name  : I2C_WaitAck
 * Description    : Master Reserive Slave Acknowledge Single
@@ -173,24 +163,22 @@ void I2C_NoAck(void)
 ****************************************************************************** */
 uint16_t I2C_WaitAck(void) 	 //返回为:=1有ACK,=0无ACK
 {
-	SCL_L;
-	I2C_delay();
+	uint8_t re;
 	SDA_H;			
 	I2C_delay();
 	SCL_H;
-	I2C_SDA_IN();
 	I2C_delay();
-	
 	if(SDA_read)
 	{
-      SCL_L;
-	  I2C_delay();
-      return FALSE;
+		re = 1;
 	}
-	I2C_SDA_OUT();
+	else
+	{
+		re = 0;
+	}
 	SCL_L;
 	I2C_delay();
-	return TRUE;
+	return re;
 }
 /*******************************************************************************
 * Function Name  : I2C_SendByte
@@ -201,21 +189,22 @@ uint16_t I2C_WaitAck(void) 	 //返回为:=1有ACK,=0无ACK
 ****************************************************************************** */
 void I2C_SendByte(unsigned char SendByte) //数据从高位到低位//
 {
-    u8 i=8;
-    while(i--)
+    u8 i;
+    for(i=0;i<8;i++)
     {
-        SCL_L;
-        I2C_delay();
-      if(SendByte&0x80)
-              SDA_H;  
-      else 
-        SDA_L;   
+		if(SendByte&0x80) SDA_H;  else SDA_L;   
+		 I2C_delay();
+		SCL_H;
+		 I2C_delay();
+		SCL_L;
+		if (i == 7)
+		{
+			 SDA_H; // 释放总线
+		}
+		
         SendByte<<=1;
         I2C_delay();
-		SCL_H;
-        I2C_delay();
     }
-    SCL_L;
 }  
 /*******************************************************************************
 * Function Name  : I2C_RadeByte
@@ -228,26 +217,20 @@ unsigned char I2C_RadeByte(void)  //数据从高位到低位//
 { 
     u8 i=8;
     u8 ReceiveByte=0;
-
     SDA_H;				
-	I2C_SDA_IN();
-    while(i--)
+   for (i = 0; i < 8; i++)
     {
-				
       ReceiveByte<<=1;      
-      SCL_L;
-      I2C_delay();
-	  SCL_H;
-			
+      SCL_H;
       I2C_delay();	
-		
       if(SDA_read)
       {
         ReceiveByte|=0x01;
       }
-			
+	   SCL_L;
+	  I2C_delay();	
     }
-    SCL_L;
+   
     return ReceiveByte;
 } 
 //ZRX          

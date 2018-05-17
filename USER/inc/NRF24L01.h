@@ -61,23 +61,23 @@
 /**********************************************************************************************************/
 
 //NRF2401片选信号
-#define CE_L      GPIO_ResetBits(GPIOD, GPIO_Pin_15)
-#define CE_H      GPIO_SetBits(GPIOD ,GPIO_Pin_15)
+#define CE_L      GPIO_ResetBits(GPIOD, GPIO_Pin_9)
+#define CE_H      GPIO_SetBits(GPIOD ,GPIO_Pin_9)
 
 //SPI片选信号	
-#define CSN_L     GPIO_ResetBits(GPIOD, GPIO_Pin_12)
-#define CSN_H     GPIO_SetBits(GPIOD, GPIO_Pin_12)
+#define CSN_L     GPIO_ResetBits(GPIOD, GPIO_Pin_5)
+#define CSN_H     GPIO_SetBits(GPIOD, GPIO_Pin_5)
 
 //SPI时钟
-#define 	SCK_L	GPIO_ResetBits(GPIOD , GPIO_Pin_14)
-#define 	SCK_H	GPIO_SetBits(GPIOD , GPIO_Pin_14)
+#define 	SCK_L	GPIO_ResetBits(GPIOD , GPIO_Pin_4)
+#define 	SCK_H	GPIO_SetBits(GPIOD , GPIO_Pin_4)
 
 //SPI输出
 #define 	MOSI_L	GPIO_ResetBits(GPIOD , GPIO_Pin_10)
 #define 	MOSI_H	GPIO_SetBits(GPIOD , GPIO_Pin_10)
 
 //SPI输入
-#define 	READ_MISO	GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_13)
+#define 	READ_MISO	 GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_6)
    
 //IRQ中断脚
 #define IRQ_L     GPIO_ResetBits(GPIOD,GPIO_Pin_11) 
