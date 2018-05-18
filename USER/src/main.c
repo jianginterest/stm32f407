@@ -26,6 +26,8 @@ uint32_t i=0;
 
 uint8_t aaa[]={3,'J','Y','F'};
 
+static uint8_t a[2]={0x0d,0x0a};
+
 int main()
 {
 	
@@ -63,37 +65,44 @@ int main()
 		
 		 JY901B_Getdata();		
 	
-		 Delay_ms(50);
+		 Delay_ms(500);
 		
 		 USART2_Send_data(Air_Pressur,13);
 	   USART_Send_number_5(Air_Pressure);
+		USART2_Send_data(a,2);
 		
-		 Delay_ms(50);
 		 USART2_Send_data(angle,6);
 		 USART_Send_number_3(( int)Angle[0]);
 		 USART_Send_number_3(( int)Angle[1]);
 	   USART_Send_number_3(( int)Angle[2]);
+		 USART2_Send_data(a,2);
 		
-		 Delay_ms(50);
 		 USART2_Send_data(ang,4);
 	   USART_Send_number_3(( int)Angle_speed[0]);
 		 USART_Send_number_3(( int)Angle_speed[1]);
 		 USART_Send_number_3(( int)Angle_speed[2]);
+		 USART2_Send_data(a,2);
 		 
-		 Delay_ms(50);
 		 USART2_Send_data(acc,4);
-		 USART_Send_number_3((int)JSD[0]);
-		 USART_Send_number_3((int)JSD[1]);
-		 USART_Send_number_3((int)JSD[2]);
+		 USART_Send_number_3((int)(JSD[0]*100));
+		 USART_Send_number_3((int)(JSD[1]*100));
+		 USART_Send_number_3((int)(JSD[2]*100));
+		 USART2_Send_data(a,2);
 		 
-		 Delay_ms(50);
 		 USART2_Send_data(magnetic,4);
 		 USART_Send_number_3( (int)c[0]);
-		 USART_Send_number_3( (int)c[1]);
+		 USART_Send_number_5( (int)c[1]);
 		 USART_Send_number_3( (int)c[2]);
-		
-		
-		
+		 
+		 USART2_Send_data(a,2);
+		 
+		 USART2_Send_data(a,2);
+		 
+		 USART2_Send_data(a,2);
+		 
+
+   // USART_Send_number_3( (int)QY[0]);
+		 
 	}
 }
 

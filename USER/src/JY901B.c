@@ -5,7 +5,7 @@ unsigned char data[40];
 
 
 float Angle_speed[3]={0},Angle[3]={0};
-float JSD[3]={0},c[3]={0};
+float JSD[3]={0},c[3]={0},QY[3]={0};
 
 float Air_Pressure=0;
 /*******************************************************************************
@@ -123,6 +123,26 @@ void JY901B_Getdata(void)
 	}
 	I2C_Stop();
 	
+	
+	
+	I2C_Start();
+  I2C_SendByte(JY901B_SlaveAddress);
+	I2C_WaitAck();
+	I2C_SendByte(0x45);
+	I2C_WaitAck();
+	I2C_Start();
+	I2C_SendByte(JY901B_SlaveAddress+1);
+	I2C_WaitAck();
+
+	for(i=32;i<38;i++)
+	{
+		data[i]=I2C_RadeByte();	
+		if(i==37) I2C_NoAck();
+		else I2C_Ack();
+	}
+	I2C_Stop();
+	
+	
 	Angle_speed[0] = (float)CharToShort(&data[0])/32768*2000;
 	Angle_speed[1] = (float)CharToShort(&data[2])/32768*2000;
 	Angle_speed[2] = (float)CharToShort(&data[4])/32768*2000;
@@ -142,6 +162,9 @@ void JY901B_Getdata(void)
 	 c[0]=CharToShort(&data[20]);
 	 c[1]=CharToShort(&data[22]);
 	 c[2]=CharToShort(&data[24]);
+	 
+	 QY[0]=( (int)(data[35]<<24)|(int)(data[34]<<16)|(int)(data[33]<<8)|(int)(data[32])); 
+
 
 	
 }

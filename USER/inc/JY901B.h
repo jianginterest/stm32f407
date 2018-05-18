@@ -18,6 +18,7 @@ extern	float	A[3];
 extern	float	JSD[3];	
 extern	float	c[3];		
 extern	unsigned char data[40];	
+extern float QY[3];	
 extern float Air_Pressure;	
 
 #endif

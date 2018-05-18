@@ -83,17 +83,13 @@ void usart2_3_init(void)
 *******************************************************************************/
 void USART2_Send_data(uint8_t* str,uint8_t len)
 {
-unsigned char i;
-//unsigned int n;
-   // EN485_1_H();
+		unsigned char i;
     for(i=0;i<len;i++)
     {
         USART_SendData(USART2,*str);
         while(USART_GetFlagStatus(USART2, USART_FLAG_TXE) == RESET);
         str++;
     }
-   // for(n=0;n<4000;n++);
-   // EN485_1_L();
 	}
 
 	
@@ -146,38 +142,42 @@ B=number%1000/100+0x30;
 Q=number%100/10+0x30;
 G=number%10+0x30;
 USART_SendData(USART2,SW);
-Delay_ms(50);
+while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);
 USART_SendData(USART2,W);
-Delay_ms(50);
+while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);
 USART_SendData(USART2,S);
-Delay_ms(50);
+while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);
 USART_SendData(USART2,B);
-Delay_ms(50);
+while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);
 USART_SendData(USART2,Q);
-Delay_ms(50);
+while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);
 USART_SendData(USART2,G);
-Delay_ms(50);
+while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);
 }
 
 
-void USART_Send_number_3(unsigned int number)
+void USART_Send_number_3(int16_t number)
 {
-if((number&0x800)==0x800)
-USART_Send_single(2,'-');
-else
-USART_Send_single(2,'+');
+		 int B,Q,G;
+	if(number<0)
+	{
+		USART_Send_single(2,'-');
+		number*=-1;
+	}
+	else
+		USART_Send_single(2,'+');
+	
 
-number&=0x7ff;
- int B,Q,G;
 
-B=number/100+0x30;
-Q=number%100/10+0x30;
-G=number%10+0x30;
 
-USART_SendData(USART2,B);
-Delay_ms(50);
-USART_SendData(USART2,Q);
-Delay_ms(50);
-USART_SendData(USART2,G);
-Delay_ms(50);
+	B=number/100+0x30;
+	Q=number%100/10+0x30;
+	G=number%10+0x30;
+
+	USART_SendData(USART2,B);
+	 while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);
+	USART_SendData(USART2,Q);
+	 while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);
+	USART_SendData(USART2,G);
+	 while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);
 }
