@@ -126,14 +126,21 @@ while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);}//TXE?
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART_Send_number_5(unsigned int number)
+void USART_Send_number_5(int16_t number)
 {
-if((number&0x80000)==0x80000)
-USART_Send_single(2,'-');
-else
-USART_Send_single(2,'+');
+//if((number&0x80000)==0x80000)
+//USART_Send_single(2,'-');
+//else
+//USART_Send_single(2,'+');
 
-number&=0x7ffff;
+//number&=0x7ffff;
+		if(number<0)
+	{
+		USART_Send_single(2,'-');
+		number*=-1;
+	}
+	else
+		USART_Send_single(2,'+');
  int W,S,B,Q,G,SW;
 SW=number/100000+0x30;
 W=number%100000/10000+0x30;
@@ -167,8 +174,6 @@ void USART_Send_number_3(int16_t number)
 	else
 		USART_Send_single(2,'+');
 	
-
-
 
 	B=number/100+0x30;
 	Q=number%100/10+0x30;

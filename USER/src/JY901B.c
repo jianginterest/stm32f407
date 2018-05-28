@@ -165,6 +165,6 @@ void JY901B_Getdata(void)
 	 
 	 QY[0]=( (int)(data[35]<<24)|(int)(data[34]<<16)|(int)(data[33]<<8)|(int)(data[32])); 
 
-
+// Angle= atan2((double)y,(double)x)*(180/3.14159265)+180;//单位：角度 (0~360)      y/x的值进行反正切
 	
 }

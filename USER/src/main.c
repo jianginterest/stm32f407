@@ -47,7 +47,7 @@ int main()
 	//	t=' ';
   //	USART2_Send_data(m[0],10);
  
-//	NRF_RX_Mode();
+	NRF_RX_Mode();
 	
 	
 	//NRF_Buff[2]='a';
@@ -62,6 +62,14 @@ int main()
 	//{
 	//Start();
 	//}
+	//if(NRF_Buff[1]==(uint8_t)'A')
+	//{
+		
+	//	TIM_SetCompare3(TIM4,5);//×óÏÂ 5
+// TIM_SetCompare4(TIM4,5); //×ó ÓÒ10
+// TIM_SetCompare1(TIM4,7);
+// TIM_SetCompare2(TIM4,5); 
+	//}
 		
 		 JY901B_Getdata();		
 	
@@ -69,7 +77,7 @@ int main()
 		
 		 USART2_Send_data(Air_Pressur,13);
 	   USART_Send_number_5(Air_Pressure);
-		USART2_Send_data(a,2);
+	 	USART2_Send_data(a,2);
 		
 		 USART2_Send_data(angle,6);
 		 USART_Send_number_3(( int)Angle[0]);
@@ -90,9 +98,9 @@ int main()
 		 USART2_Send_data(a,2);
 		 
 		 USART2_Send_data(magnetic,4);
-		 USART_Send_number_3( (int)c[0]);
+		 USART_Send_number_5( (int)c[0]);
 		 USART_Send_number_5( (int)c[1]);
-		 USART_Send_number_3( (int)c[2]);
+		 USART_Send_number_5( (int)c[2]);
 		 
 		 USART2_Send_data(a,2);
 		 
@@ -101,7 +109,7 @@ int main()
 		 USART2_Send_data(a,2);
 		 
 
-   // USART_Send_number_3( (int)QY[0]);
+//   // USART_Send_number_3( (int)QY[0]);
 		 
 	}
 }
